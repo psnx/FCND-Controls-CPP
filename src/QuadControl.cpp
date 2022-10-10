@@ -71,10 +71,10 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
   auto const l = L/sqrt(2.f); // this should be calculated once - but I keep it in student code section
-  auto f0 = (collThrustCmd + momentCmd.x/l + momentCmd.y/l - momentCmd.z/kappa) / 4.f;
-  auto f1 = (collThrustCmd - momentCmd.x/l + momentCmd.y/l + momentCmd.z/kappa) / 4.f;
-  auto f2 = (collThrustCmd + momentCmd.x/l - momentCmd.y/l + momentCmd.z/kappa) / 4.f;
-  auto f3 = (collThrustCmd - momentCmd.x/l - momentCmd.y/l - momentCmd.z/kappa) / 4.f;
+  auto const f0 = (collThrustCmd + momentCmd.x/l + momentCmd.y/l - momentCmd.z/kappa) / 4.f;
+  auto const f1 = (collThrustCmd - momentCmd.x/l + momentCmd.y/l + momentCmd.z/kappa) / 4.f;
+  auto const f2 = (collThrustCmd + momentCmd.x/l - momentCmd.y/l + momentCmd.z/kappa) / 4.f;
+  auto const f3 = (collThrustCmd - momentCmd.x/l - momentCmd.y/l - momentCmd.z/kappa) / 4.f;
 
   cmd.desiredThrustsN[0] = CONSTRAIN(f0, minMotorThrust, maxMotorThrust);
   cmd.desiredThrustsN[1] = CONSTRAIN(f1, minMotorThrust, maxMotorThrust);
@@ -236,7 +236,6 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
   velCmd.y = CONSTRAIN(velCmd.y, -maxSpeedXY, maxSpeedXY);
 
   accelCmd += accelCmdFF + kpVelXY * (velCmd - vel);
-  //accelCmd += kpVelXY * (velCmd - vel);
   accelCmd.x = CONSTRAIN(accelCmd.x, -maxAccelXY, maxAccelXY);
   accelCmd.y = CONSTRAIN(accelCmd.y, -maxAccelXY, maxAccelXY);
 
@@ -262,8 +261,8 @@ float QuadControl::YawControl(float yawCmd, float yaw)
 
   float yawRateCmd=0;
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-  auto const rad = fmodf(yawCmd - yaw, 2.*F_PI);
-  yawRateCmd = kpYaw * rad;
+  auto const yawError = fmodf(yawCmd - yaw, 2.*F_PI);
+  yawRateCmd = kpYaw * yawError;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
