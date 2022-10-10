@@ -1,7 +1,10 @@
 # Writeup for project submission
 
 In this project I've implemented a cascade flight controller for a quadrotor drone.
-All the addressed points have been adequately implemented in C++
+All the addressed points have been adequately implemented in C++.
+
+![Test path](./animations/TesMavLink.png)
+
 
 ## Motor command
 	
@@ -23,6 +26,7 @@ cmd.desiredThrustsN[3] = CONSTRAIN(f3, minMotorThrust, maxMotorThrust);
 ## Body rate control
 
 This is implemented as a simple proportional (`P`) controller that creates a momentum command based on the difference between the actual and target body rate values. `kpPQR` represents the controller gain and and the `I` is the moment of inertia.
+
 
 ```cpp
 auto const I = V3F {Ixx, Iyy, Izz};
@@ -69,7 +73,10 @@ accelZCmd += KiPosZ * integratedAltitudeError + kpVelZ * (velZCmd - velZ);
 thrust = mass * (CONST_GRAVITY - accelZCmd) / R(2,2);
 ```
 
-0. Lateral position control
+![Attitude Control](./animations/AttitudeControl.png)
+
+
+## Lateral position control
 
 First we obatin a the desired velocity (`velCmd`) which is directly proportional to the distance between the actual and commanded positions; the value is then clamped by the limitations of the vehicle.
 
@@ -87,7 +94,11 @@ accelCmd.y = CONSTRAIN(accelCmd.y, -maxAccelXY, maxAccelXY);'
 ```
 The fact that this controller acts as both on the error in position(ie. distance) and the velocity makes this a PD controller.  
 
-0. Yaw control
+
+![Position Control](./animations/PositionControl.png)
+
+
+## Yaw control
 
 The yaw controller is a simple `P` controller acting on the error between the commanded and actual yaw. The error is constrained between -2 $\pi$ and + 2 $\pi$.
 
@@ -97,3 +108,7 @@ This is the actual implementation:
 auto const yawError = fmodf(yawCmd - yaw, 2.*F_PI);
 yawRateCmd = kpYaw * yawError;
 ```
+
+Finally the drone handles nonlinearites 
+
+![Nonlinearities](./animations/NonLinearities.png)
